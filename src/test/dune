@@ -1,0 +1,9 @@
+(executable
+ (name test_all)
+ (libraries
+   alcotest
+   o99))
+
+(rule
+ (alias runtest)
+ (action (run %{exe:test_all.exe})))

@@ -90,4 +90,13 @@ let tests = [
        [(One 1)] (encode2 [1]));
   ("encode2 [1; 2; 2; 2; 3]", `Quick, fun () -> check (list testable_rle_int) ""
        [(One 1); (Many (3, 2)); (One (3))] (encode2 [1; 2; 2; 2; 3]));
+
+  ("decode []", `Quick, fun () -> check (list int) ""
+       [] (decode []));
+  ("decode [One 1]", `Quick, fun () -> check (list int) ""
+       [1] (decode [One 1]));
+  ("decode [Many (3, 1); One 2; Many (2, 3); One 4]", `Quick, fun () ->
+      check (list int) ""
+        [1; 1; 1; 2; 3; 3; 4]
+        (decode [Many (3, 1); One 2; Many (2, 3); One 4]));
 ]

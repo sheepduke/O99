@@ -69,8 +69,8 @@ let rev (list : 'a list) : 'a list =
   let rec aux source result =
     match source with
     | [] -> result
-    | head :: tail -> aux tail (head :: result) in
-  aux list []
+    | head :: tail -> aux tail (head :: result)
+  in aux list []
 
 (**
  ** 6. Find out whether a list is a palindrome. (easy)
@@ -179,5 +179,23 @@ let encode2 (list : 'a list) : 'a rle list =
     | x :: (y :: _ as tail) ->
       if x = y then aux (count + 1) result tail
       else aux 0 (result @ [to_rle (count + 1) x]) tail
-    | _ -> []
-  in aux 0 [] list
+    | _ -> [] in
+  aux 0 [] list
+
+(**
+ ** 12. Decode a run-length encoded list. (medium)
+ **
+ ** Given a run-length code list generated as specified in the previous problem,
+ ** construct its uncompressed version.
+ ** # decode [Many (4,"a"); One "b"; Many (2,"c"); Many (2,"a"); One "d"; Many (4,"e")];;
+ ** - : string list = ["a"; "a"; "a"; "a"; "b"; "c"; "c"; "a"; "a"; "d"; "e"; "e"; "e"; "e"] *)
+let rec decode (rle_list : 'a rle list) =
+  let rec make_list result count value =
+    assert (count >= 0);
+    if count = 0 then result else make_list (value :: result) (count - 1) value in
+  let rle_to_list = function
+    | One value -> [value]
+    | Many (count, value) -> make_list [] count value in
+  match rle_list with
+  | [] -> []
+  | head :: tail -> (rle_to_list head) @ (decode tail)

@@ -3,6 +3,15 @@ open Alcotest
 
 let option_int_2 = (option (pair int int))
 
+let pp_rle_int ppf (rle : int rle) =
+  match rle with
+  | One value -> Fmt.pf ppf "One %d" value
+  | Many (count, value) -> Fmt.pf ppf "Many (%d,%d)" count value
+
+let equal_rle_int (x : 'a rle) (y : 'a rle) = x = y
+
+let testable_rle_int = Alcotest.testable pp_rle_int equal_rle_int
+
 let tests = [
   ("last []", `Quick, fun () ->
       check (option int) "" None (last []: int option));
@@ -75,5 +84,10 @@ let tests = [
       check (list (pair int int)) "" [(3, 1); (2, 2); (1, 3); (2, 4); (1, 1)]
         (encode [1; 1; 1; 2; 2; 3; 4; 4; 1]));
 
-  (* TODO implement test for encode2 *)
+  ("encode2 []", `Quick, fun () -> check (list testable_rle_int) ""
+       [] (encode2 []));
+  ("encode2 [1]", `Quick, fun () -> check (list testable_rle_int) ""
+       [(One 1)] (encode2 [1]));
+  ("encode2 [1; 2; 2; 2; 3]", `Quick, fun () -> check (list testable_rle_int) ""
+       [(One 1); (Many (3, 2)); (One (3))] (encode2 [1; 2; 2; 2; 3]));
 ]

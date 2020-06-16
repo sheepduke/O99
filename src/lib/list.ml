@@ -8,7 +8,7 @@ include Fmt
  **
  ** # last [];;
  ** - : 'a option = None *)
-let rec last (list : 'a list) : ('a option) =
+let rec last (list : 'a list) : 'a option =
   match list with
   | [] -> None
   | [x] -> Some x
@@ -22,7 +22,7 @@ let rec last (list : 'a list) : ('a option) =
  ** 
  ** # last_two [ "a" ];;
  ** - : (string * string) option = None *)
-let rec last_two (list : 'a list) : (('a * 'a) option) =
+let rec last_two (list : 'a list) : ('a * 'a) option =
   match list with
   | [] -> None
   | [_] -> None
@@ -80,7 +80,7 @@ let rev (list : 'a list) : 'a list =
  ** - : bool = true
  ** # not (is_palindrome [ "a" ; "b" ]);;
  ** - : bool = true *)
-let is_palidrome (list : 'a list) =
+let is_palidrome (list : 'a list) : bool =
   list = rev list
 
 (**
@@ -119,7 +119,7 @@ let rec compress (list : 'a list) : 'a list =
  ** - : string list list =
  ** [["a"; "a"; "a"; "a"]; ["b"]; ["c"; "c"]; ["a"; "a"]; ["d"; "d"];
  **  ["e"; "e"; "e"; "e"]] *)
-let pack (list : 'a list) : ('a list list) =
+let pack (list : 'a list) : 'a list list =
   let rec aux last result list =
     match list, last with
     | head :: tail, [] -> aux [head] result tail
@@ -140,7 +140,7 @@ let pack (list : 'a list) : ('a list list) =
  ** # encode ["a";"a";"a";"a";"b";"c";"c";"a";"a";"d";"e";"e";"e";"e"];;
  ** - : (int * string) list =
  ** [(4, "a"); (1, "b"); (2, "c"); (2, "a"); (1, "d"); (4, "e")] *)
-let encode (list : 'a list) : ((int * 'a) list) =
+let encode (list : 'a list) : (int * 'a) list =
   let rec aux last result list =
     match list, last with
     | head :: tail, None -> aux (Some (1, head)) result tail
@@ -189,13 +189,148 @@ let encode2 (list : 'a list) : 'a rle list =
  ** construct its uncompressed version.
  ** # decode [Many (4,"a"); One "b"; Many (2,"c"); Many (2,"a"); One "d"; Many (4,"e")];;
  ** - : string list = ["a"; "a"; "a"; "a"; "b"; "c"; "c"; "a"; "a"; "d"; "e"; "e"; "e"; "e"] *)
-let rec decode (rle_list : 'a rle list) =
-  let rec make_list result count value =
+let make_list (value : 'a) (count : int) : 'a list =
+  let rec aux result value count =
     assert (count >= 0);
-    if count = 0 then result else make_list (value :: result) (count - 1) value in
+    if count = 0 then result else aux (value :: result) value (count - 1) in
+  aux [] value count
+
+let rec decode (rle_list : 'a rle list) : 'a list =
   let rle_to_list = function
     | One value -> [value]
-    | Many (count, value) -> make_list [] count value in
+    | Many (count, value) -> make_list value count in
   match rle_list with
   | [] -> []
   | head :: tail -> (rle_to_list head) @ (decode tail)
+
+(** 14. Duplicate the elements of a list. (easy)
+ **
+ ** # duplicate ["a";"b";"c";"c";"d"];;
+ ** - : string list = ["a"; "a"; "b"; "b"; "c"; "c"; "c"; "c"; "d"; "d"] *)
+let duplicate (list : 'a list) : 'a list =
+  let rec aux result list =
+    match list with
+    | [] -> result
+    | head :: tail -> aux (result @ [head; head]) tail in
+  aux [] list
+
+(** 15. Replicate the elements of a list a given number of times. (medium)
+ **
+ ** # replicate ["a";"b";"c"] 3;;
+ ** - : string list = ["a"; "a"; "a"; "b"; "b"; "b"; "c"; "c"; "c"] *)
+let replicate (list : 'a list) (count : int) : 'a list =
+  let rec aux result list =
+    match list with
+    | [] -> result
+    | head :: tail -> aux (result @ (make_list head count)) tail in
+  aux [] list
+
+(** 16. Drop every N'th element from a list. (medium)
+ **
+ ** # drop ["a";"b";"c";"d";"e";"f";"g";"h";"i";"j"] 3;;
+ ** - : string list = ["a"; "b"; "d"; "e"; "g"; "h"; "j"] *)
+let drop (list : 'a list) (every : int) : 'a list =
+  let rec aux result num list = 
+    match list, num with
+    | [], _ -> result
+    | _ :: tail, 1 -> aux result every tail
+    | head :: tail, num -> aux (result @ [head]) (num - 1) tail in
+  aux [] every list
+
+(** 17. Split a list into two parts; the length of the first part is given. (easy)
+ **
+ ** If the length of the first part is longer than the entire list, then the
+    first part is the list and the second part is empty.
+ **
+ ** # split ["a";"b";"c";"d";"e";"f";"g";"h";"i";"j"] 3;;
+ ** - : string list * string list =
+ **   (["a"; "b"; "c"], ["d"; "e"; "f"; "g"; "h"; "i"; "j"])
+ **
+ ** # split ["a";"b";"c";"d"] 5;;
+ ** - : string list * string list = (["a"; "b"; "c"; "d"], []) *)
+let split (list : 'a list) (count : int) : 'a list * 'a list =
+  let rec aux first second count =
+    match first, second, count with
+    | _, [], _ -> first, []
+    | _, _, 0 -> first, second
+    | _, head :: tail, _ -> aux (first @ [head]) tail (count - 1)
+  in
+  aux [] list count
+
+(** 18. Extract a slice from a list. (medium)
+ **
+ ** Given two indices, i and k, the slice is the list containing the elements
+ ** between the i'th and k'th element of the original list (both limits
+ ** included). Start counting the elements with 0 (this is the way the List
+ ** module numbers elements).
+ **
+ ** # slice ["a";"b";"c";"d";"e";"f";"g";"h";"i";"j"] 2 6;;
+ ** - : string list = ["c"; "d"; "e"; "f"; "g"] *)
+let slice (list : 'a list) (first : int) (last : int) : 'a list =
+  let rec aux result index list =
+    match list, index with
+    | _ :: tail, _ when index < first -> aux result (index + 1) tail
+    | head :: tail, _ when index >= first && index <= last ->
+      aux (result @ [head]) (index + 1) tail
+    | _, _ -> result in
+  aux [] 0 list
+
+(** 19. Rotate a list N places to the left. (medium)
+ **
+ ** # rotate ["a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"] 3;;
+ ** - : string list = ["d"; "e"; "f"; "g"; "h"; "a"; "b"; "c"]
+ ** # rotate ["a"; "b"; "c"; "d"; "e"; "f"; "g"; "h"] (-2);;
+ ** - : string list = ["g"; "h"; "a"; "b"; "c"; "d"; "e"; "f"] *)
+let rotate (list : 'a list) (count : int) : 'a list =
+  let rec aux left right count =
+    match right with
+    | head :: tail when count > 0 -> aux (left @ [head]) tail (count - 1)
+    | _ -> right @ left in
+  aux [] list count
+
+(** 20. Remove the K'th element from a list. (easy)
+ **
+ ** The first element of the list is numbered 0, the second 1,...
+ **
+ ** # remove_at 1 ["a";"b";"c";"d"];;
+ ** - : string list = ["a"; "c"; "d"] *)
+let remove_at (index : int) (list : 'a list) : 'a list =
+  let rec aux left right index =
+    match right with
+    | head :: tail when index > 0 -> aux (left @ [head]) tail (index - 1)
+    | _ :: tail when index = 0 -> left @ tail
+    | _ -> left @ right in
+  aux [] list index
+
+(** 21. Insert an element at a given position into a list. (easy)
+ **
+ ** Start counting list elements with 0. If the position is larger or equal to
+ ** the length of the list, insert the element at the end. (The behavior is
+ ** unspecified if the position is negative.)
+ ** 
+ ** # insert_at "alfa" 1 ["a";"b";"c";"d"];;
+ ** - : string list = ["a"; "alfa"; "b"; "c"; "d"]
+ ** # insert_at "alfa" 3 ["a";"b";"c";"d"];;
+ ** - : string list = ["a"; "b"; "c"; "alfa"; "d"]
+ ** # insert_at "alfa" 4 ["a";"b";"c";"d"];;
+ ** - : string list = ["a"; "b"; "c"; "d"; "alfa"] *)
+let rec insert_at (element : 'a) (index : int) (list : 'a list) : 'a list =
+  match list with
+  | [] -> [element]
+  | head :: tail -> if index = 0
+    then element :: list
+    else head :: insert_at element (index - 1) tail
+
+(** 22. Create a list containing all integers within a given range. (easy)
+ ** 
+ ** If first argument is greater than second, produce a list in decreasing order.
+ **
+ ** # range 4 9;;
+ ** - : int list = [4; 5; 6; 7; 8; 9]
+ ** # range 9 4;;
+ ** - : int list = [9; 8; 7; 6; 5; 4] *)
+let range (left : int) (right : int) : int list =
+  let rec aux left right = if left <= right
+    then left :: aux (left + 1) right
+    else [] in
+  if left <= right then aux left right else rev (aux right left)

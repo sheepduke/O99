@@ -1,8 +1,6 @@
 open O99.List
 open Alcotest
 
-let option_int_2 = (option (pair int int))
-
 let pp_rle_int ppf (rle : int rle) =
   match rle with
   | One value -> Fmt.pf ppf "One %d" value
@@ -21,13 +19,13 @@ let tests = [
       check (option int) "" (Some 2) (last [1; 2]));
 
   ("last_two []", `Quick, fun () ->
-      check option_int_2 "" None (last_two []: (int * int) option));
+      check (option (pair int int)) "" None (last_two []: (int * int) option));
   ("last_two [1]", `Quick, fun () ->
-      check option_int_2 "" None (last_two [1]));
+      check (option (pair int int)) "" None (last_two [1]));
   ("last_two [1, 2]", `Quick, fun () ->
-      check option_int_2 "" (Some (1, 2)) (last_two [1; 2]));
+      check (option (pair int int)) "" (Some (1, 2)) (last_two [1; 2]));
   ("last_two [1, 2, 3]", `Quick, fun () ->
-      check option_int_2 "" (Some (2, 3)) (last_two [1; 2; 3]));
+      check (option (pair int int)) "" (Some (2, 3)) (last_two [1; 2; 3]));
 
   ("at 0 []", `Quick, fun () ->
       check (option int) "" None (at 0 []: int option));
@@ -99,4 +97,74 @@ let tests = [
       check (list int) ""
         [1; 1; 1; 2; 3; 3; 4]
         (decode [Many (3, 1); One 2; Many (2, 3); One 4]));
+
+  ("duplicate []", `Quick, fun () -> check (list int) "" [] (duplicate []));
+  ("duplicate [1]", `Quick, fun () -> check (list int) "" [1; 1] (duplicate [1]));
+  ("duplicate [1; 2]", `Quick, fun () -> check (list int) ""
+       [1; 1; 2; 2] (duplicate [1; 2]));
+
+  ("replicate [] 1", `Quick, fun () -> check (list int) "" [] (replicate [] 1));
+  ("replicate [1] 2", `Quick, fun () -> check (list int) ""
+       [1; 1] (replicate [1] 2));
+  ("replicate [1; 2] 3", `Quick, fun () -> check (list int) ""
+       [1; 1; 1; 2; 2; 2] (replicate [1; 2] 3));
+
+  ("drop [] 1", `Quick, fun () -> check (list int) "" [] (drop [] 1));
+  ("drop [1] 1", `Quick, fun () -> check (list int) "" [] (drop [1] 1));
+  ("drop [1] 2", `Quick, fun () -> check (list int) "" [1] (drop [1] 2));
+  ("drop [1; 2] 1", `Quick, fun () -> check (list int) "" [] (drop [1; 2] 1));
+  ("drop [1; 2] 2", `Quick, fun () -> check (list int) "" [1] (drop [1; 2] 2));
+  ("drop [1; 2; 3; 4] 2", `Quick, fun () -> check (list int) ""
+       [1; 3] (drop [1; 2; 3; 4] 2));
+
+  ("split [] 1", `Quick, fun () -> check (pair (list int) (list int)) ""
+       ([], []) (split [] 1));
+  ("split [1] 1", `Quick, fun () -> check (pair (list int) (list int)) ""
+       ([1], []) (split [1] 1));
+  ("split [1] 2", `Quick, fun () -> check (pair (list int) (list int)) ""
+       ([1], []) (split [1] 2));
+  ("split [1; 2] 1", `Quick, fun () -> check (pair (list int) (list int)) ""
+       ([1], [2]) (split [1; 2] 1));
+  ("split [1; 2; 3] 2", `Quick, fun () -> check (pair (list int) (list int)) ""
+       ([1; 2], [3]) (split [1; 2; 3] 2));
+
+  ("slice [] 0 1", `Quick, fun () -> check (list int) "" [] (slice [] 0 1));
+  ("slice [1] 0 1", `Quick, fun () -> check (list int) "" [1] (slice [1] 0 1));
+  ("slice [1; 2] 0 1", `Quick, fun () -> check (list int) ""
+       [1; 2] (slice [1; 2] 0 1));
+  ("slice [1; 2] 0 0", `Quick, fun () -> check (list int) ""
+       [1] (slice [1; 2] 0 0));
+  ("slice [1; 2; 3]", `Quick, fun () -> check (list int) ""
+       [2; 3] (slice [1; 2; 3] 1 2));
+
+  ("rotate [] 1", `Quick, fun () -> check (list int) ""
+       [] (rotate [] 1));
+  ("rotate [1] 1", `Quick, fun () -> check (list int) ""
+       [1] (rotate [1] 1));
+  ("rotate [1; 2] 1", `Quick, fun () -> check (list int) ""
+       [2; 1] (rotate [1; 2] 1));
+
+  ("remove_at 1 []", `Quick, fun () -> check (list int) ""
+       [] (remove_at 1 []));
+  ("remove_at 0 [1]", `Quick, fun () -> check (list int) ""
+       [] (remove_at 0 [1]));
+  ("remove_at 1 [1]", `Quick, fun () -> check (list int) ""
+       [1] (remove_at 1 [1]));
+  ("remove_at 0 [1; 2; 3; 4]", `Quick, fun () -> check (list int) ""
+       [2; 3; 4] (remove_at 0 [1; 2; 3; 4]));
+  ("remove_at 1 [1; 2; 3; 4]", `Quick, fun () -> check (list int) ""
+       [1; 3; 4] (remove_at 1 [1; 2; 3; 4]));
+
+  ("insert_at 1 1 []", `Quick, fun () -> check (list int) ""
+       [1] (insert_at 1 1 []));
+  ("insert_at 1 0 []", `Quick, fun () -> check (list int) ""
+       [1] (insert_at 1 0 []));
+  ("insert_at 0 0 [1; 2]", `Quick, fun () -> check (list int) ""
+       [0; 1; 2] (insert_at 0 0 [1; 2]));
+  ("insert_at 3 2 [1; 2]", `Quick, fun () -> check (list int) ""
+       [1; 2; 3] (insert_at 3 2 [1; 2]));
+
+  ("range 0 0", `Quick, fun () -> check (list int) "" [0] (range 0 0));
+  ("range 4 9", `Quick, fun () -> check (list int) ""
+       [4; 5; 6; 7; 8; 9] (range 4 9));
 ]

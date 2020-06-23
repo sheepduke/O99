@@ -57,7 +57,8 @@ let length (list : 'a list) : int =
     match list with
     |  [] -> len
     | _ :: rest -> aux (len + 1) rest
-  in aux 0 list
+  in
+  aux 0 list
 
 (**
  ** 5. Reverse a list. (easy)
@@ -70,7 +71,8 @@ let rev (list : 'a list) : 'a list =
     match source with
     | [] -> result
     | head :: tail -> aux tail (head :: result)
-  in aux list []
+  in
+  aux list []
 
 (**
  ** 6. Find out whether a list is a palindrome. (easy)
@@ -126,7 +128,8 @@ let pack (list : 'a list) : 'a list list =
     | head :: tail, x :: _ when head = x -> aux (head :: last) result tail
     | head :: tail, x :: _ when head <> x -> aux [head] (result @ [last]) tail
     | _, _ -> result @ [last]
-  in match list with
+  in
+  match list with
   | [] -> []
   | list -> aux [] [] list
 
@@ -150,7 +153,8 @@ let encode (list : 'a list) : (int * 'a) list =
       aux (Some (1, head)) (result @ [(count, value)]) tail
     | _, None -> result
     | _, Some pair -> result @ [pair]
-  in aux None [] list
+  in
+  aux None [] list
 
 (**
  ** 11. Modified run-length encoding. (easy)
@@ -172,14 +176,16 @@ type 'a rle =
 
 let encode2 (list : 'a list) : 'a rle list =
   let to_rle count value =
-    if count = 1 then (One value) else (Many (count, value)) in
+    if count = 1 then (One value) else (Many (count, value))
+  in
   let rec aux count result list =
     match list with
     | head :: [] -> result @ [to_rle (count + 1) head]
     | x :: (y :: _ as tail) ->
       if x = y then aux (count + 1) result tail
       else aux 0 (result @ [to_rle (count + 1) x]) tail
-    | _ -> [] in
+    | _ -> []
+  in
   aux 0 [] list
 
 (**
@@ -192,13 +198,15 @@ let encode2 (list : 'a list) : 'a rle list =
 let make_list (value : 'a) (count : int) : 'a list =
   let rec aux result value count =
     assert (count >= 0);
-    if count = 0 then result else aux (value :: result) value (count - 1) in
+    if count = 0 then result else aux (value :: result) value (count - 1)
+  in
   aux [] value count
 
 let rec decode (rle_list : 'a rle list) : 'a list =
   let rle_to_list = function
     | One value -> [value]
-    | Many (count, value) -> make_list value count in
+    | Many (count, value) -> make_list value count
+  in
   match rle_list with
   | [] -> []
   | head :: tail -> (rle_to_list head) @ (decode tail)
@@ -211,7 +219,8 @@ let duplicate (list : 'a list) : 'a list =
   let rec aux result list =
     match list with
     | [] -> result
-    | head :: tail -> aux (result @ [head; head]) tail in
+    | head :: tail -> aux (result @ [head; head]) tail
+  in
   aux [] list
 
 (** 15. Replicate the elements of a list a given number of times. (medium)
@@ -222,7 +231,8 @@ let replicate (list : 'a list) (count : int) : 'a list =
   let rec aux result list =
     match list with
     | [] -> result
-    | head :: tail -> aux (result @ (make_list head count)) tail in
+    | head :: tail -> aux (result @ (make_list head count)) tail
+  in
   aux [] list
 
 (** 16. Drop every N'th element from a list. (medium)
@@ -234,7 +244,8 @@ let drop (list : 'a list) (every : int) : 'a list =
     match list, num with
     | [], _ -> result
     | _ :: tail, 1 -> aux result every tail
-    | head :: tail, num -> aux (result @ [head]) (num - 1) tail in
+    | head :: tail, num -> aux (result @ [head]) (num - 1) tail
+  in
   aux [] every list
 
 (** 17. Split a list into two parts; the length of the first part is given. (easy)
@@ -272,7 +283,8 @@ let slice (list : 'a list) (first : int) (last : int) : 'a list =
     | _ :: tail, _ when index < first -> aux result (index + 1) tail
     | head :: tail, _ when index >= first && index <= last ->
       aux (result @ [head]) (index + 1) tail
-    | _, _ -> result in
+    | _, _ -> result
+  in
   aux [] 0 list
 
 (** 19. Rotate a list N places to the left. (medium)
@@ -285,7 +297,8 @@ let rotate (list : 'a list) (count : int) : 'a list =
   let rec aux left right count =
     match right with
     | head :: tail when count > 0 -> aux (left @ [head]) tail (count - 1)
-    | _ -> right @ left in
+    | _ -> right @ left
+  in
   aux [] list count
 
 (** 20. Remove the K'th element from a list. (easy)
@@ -299,7 +312,8 @@ let remove_at (index : int) (list : 'a list) : 'a list =
     match right with
     | head :: tail when index > 0 -> aux (left @ [head]) tail (index - 1)
     | _ :: tail when index = 0 -> left @ tail
-    | _ -> left @ right in
+    | _ -> left @ right
+  in
   aux [] list index
 
 (** 21. Insert an element at a given position into a list. (easy)
@@ -332,5 +346,6 @@ let rec insert_at (element : 'a) (index : int) (list : 'a list) : 'a list =
 let range (left : int) (right : int) : int list =
   let rec aux left right = if left <= right
     then left :: aux (left + 1) right
-    else [] in
+    else []
+  in
   if left <= right then aux left right else rev (aux right left)

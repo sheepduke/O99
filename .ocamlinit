@@ -1,3 +1,3 @@
 #use "topfind";;
-open Printf;;
-open Alcotest;;
+#require "alcotest";;
+#require "base";;

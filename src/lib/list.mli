@@ -228,3 +228,28 @@ val insert_at : 'a -> int -> 'a list -> 'a list
  ** # range 9 4;;
  ** - : int list = [9; 8; 7; 6; 5; 4] *)
 val range : int -> int -> int list
+
+(** 23. Extract a given number of randomly selected elements from a list. (medium)
+ **
+ ** The selected items shall be returned in a list. We use the Random module
+ ** but do not initialize it with Random.self_init for reproducibility.
+ **
+ ** # rand_select ["a";"b";"c";"d";"e";"f";"g";"h"] 3;;
+ ** - : string list = ["g"; "d"; "a"] *)
+val rand_select : 'a list -> int -> 'a list
+
+
+(** 24. Lotto: Draw N different random numbers from the set 1..M. (easy)
+ **
+ ** The selected numbers shall be returned in a list.
+ ** 
+ ** # lotto_select 6 49;;
+ ** - : int list = [10; 20; 44; 22; 41; 2] *)
+val lotto_select : int -> int -> int list
+
+
+(** 25. Generate a random permutation of the elements of a list. (easy)
+ ** 
+ ** # permutation ["a"; "b"; "c"; "d"; "e"; "f"];;
+ ** - : string list = ["a"; "e"; "f"; "b"; "d"; "c"] *)
+val permutation : 'a list -> 'a list

@@ -1,3 +1,5 @@
+open Base
+
 let rec last list =
   match list with
   | [] -> None
@@ -40,7 +42,7 @@ let rev list =
 
 
 let is_palidrome list =
-  list = rev list
+  List.equal Poly.equal list (List.rev list)
 
 
 type 'a node =
@@ -57,7 +59,10 @@ let rec flatten list =
 
 let rec compress list =
   match list with
-  | x :: (y :: _ as tail) -> if x = y then compress tail else x :: compress tail
+  | x :: (y :: _ as tail) ->
+    if Poly.equal x y
+    then compress tail
+    else x :: compress tail
   | any -> any
 
 
@@ -65,8 +70,10 @@ let pack list =
   let rec aux last result list =
     match list, last with
     | head :: tail, [] -> aux [head] result tail
-    | head :: tail, x :: _ when head = x -> aux (head :: last) result tail
-    | head :: tail, x :: _ when head <> x -> aux [head] (result @ [last]) tail
+    | head :: tail, x :: _ when Poly.equal head x ->
+      aux (head :: last) result tail
+    | head :: tail, x :: _ when not (Poly.equal head x) ->
+      aux [head] (result @ [last]) tail
     | _, _ -> result @ [last]
   in
   match list with
@@ -78,9 +85,9 @@ let encode list =
   let rec aux last result list =
     match list, last with
     | head :: tail, None -> aux (Some (1, head)) result tail
-    | head :: tail, Some (count, value) when head = value ->
+    | head :: tail, Some (count, value) when Poly.equal head value ->
       aux (Some (count + 1, value)) result tail
-    | head :: tail, Some (count, value) when head <> value ->
+    | head :: tail, Some (count, value) when not (Poly.equal head value) ->
       aux (Some (1, head)) (result @ [(count, value)]) tail
     | _, None -> result
     | _, Some pair -> result @ [pair]
@@ -101,7 +108,7 @@ let encode2 list =
     match list with
     | head :: [] -> result @ [to_rle (count + 1) head]
     | x :: (y :: _ as tail) ->
-      if x = y then aux (count + 1) result tail
+      if Poly.equal x y then aux (count + 1) result tail
       else aux 0 (result @ [to_rle (count + 1) x]) tail
     | _ -> []
   in
@@ -203,8 +210,35 @@ let rec insert_at element index list =
 
 
 let range left right =
-  let rec aux left right = if left <= right
+  let rec aux left right =
+    if left <= right
     then left :: aux (left + 1) right
     else []
   in
   if left <= right then aux left right else rev (aux right left)
+
+
+let lotto_select count num =
+  let rec aux num count result =
+    if count = 0
+    then result
+    else let next = Random.int num in
+      if List.mem result next ~equal:(=)
+      then aux num count result
+      else aux num (count - 1) (next :: result)
+  in
+  if num < count
+  then raise (Invalid_argument
+                (Printf.sprintf "num %d is less than count %d" num count))
+  else aux num count []
+
+
+let rand_select list count =
+  let indexes = lotto_select count (length list) in
+  List.map indexes ~f:(fun index -> List.nth_exn list index)
+
+
+let permutation list =
+  let length = length list in
+  let indexes = lotto_select length length in
+  List.map indexes ~f:(fun index -> List.nth_exn list index)

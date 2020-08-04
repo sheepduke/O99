@@ -167,4 +167,17 @@ let tests = [
   ("range 0 0", `Quick, fun () -> check (list int) "" [0] (range 0 0));
   ("range 4 9", `Quick, fun () -> check (list int) ""
        [4; 5; 6; 7; 8; 9] (range 4 9));
+
+  ("extract 2 ['a';'b';'c';'d']", `Quick, fun () -> check (list (list char)) ""
+       [['a'; 'b']; ['a'; 'c']; ['a'; 'd']; ['b'; 'c']; ['b'; 'd']; ['c'; 'd']]
+       (extract 2 ['a';'b';'c';'d']));
+
+  ("extract 2 [1; 2; 3; 4; 5]", `Quick, fun () -> check (list (list int)) ""
+       [[1; 2]; [1; 3]; [1; 4]; [1; 5]; [2; 3]; [2; 4]; [2; 5];
+        [3; 4]; [3; 5]; [4; 5]]
+       (extract 2 [1; 2; 3; 4; 5]));
+
+  ("extract 3 [1; 2; 3; 4]", `Quick, fun () -> check (list (list int)) ""
+       [[1; 2; 3]; [1; 2; 4]; [1; 3; 4]; [2; 3; 4]]
+       (extract 3 [1; 2; 3; 4]));
 ]

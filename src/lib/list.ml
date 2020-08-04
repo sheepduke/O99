@@ -242,3 +242,15 @@ let permutation list =
   let length = length list in
   let indexes = lotto_select length length in
   List.map indexes ~f:(fun index -> List.nth_exn list index)
+
+
+let rec extract count list =
+  if count = 0
+  then [[]]
+  else
+    match list with
+    | [] -> []
+    | head :: tail ->
+      List.map ~f:(fun sublist -> head :: sublist)
+        (extract (count - 1) tail)
+      @ (extract count tail)

@@ -1,3 +1,2 @@
 (library
- (name o99)
- (libraries fmt base))
+ (name o99))

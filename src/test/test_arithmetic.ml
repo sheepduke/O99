@@ -19,4 +19,19 @@ let tests = [
       check int "2 4" 2 (gcd 2 4);
       check int "2 5" 1 (gcd 2 5);
       check int "6 8" 2 (gcd 6 8));
+
+  ("coprime", `Quick, fun () ->
+      check bool "13 27" true (coprime 13 27);
+      check bool "2 4" false (coprime 2 4);
+      check bool "20536 7826" false (coprime 20536 7826));
+
+  ("phi", `Quick, fun () ->
+      check int "10" 4 (phi 10);
+      check int "13" 12 (phi 13));
+
+  ("factors", `Quick, fun () ->
+      check (list int) "2" [2] (factors 2);
+      check (list int) "10" [2; 5] (factors 10);
+      check (list int) "20" [2; 2; 5] (factors 20);
+      check (list int) "315" [3; 3; 5; 7] (factors 315));
 ]

@@ -34,4 +34,29 @@ let tests = [
       check (list int) "10" [2; 5] (factors 10);
       check (list int) "20" [2; 2; 5] (factors 20);
       check (list int) "315" [3; 3; 5; 7] (factors 315));
+
+  ("factors2", `Quick, fun () ->
+      check (list (pair int int)) "2" [(2, 1)] (factors2 2);
+      check (list (pair int int)) "10" [(2, 1); (5, 1)] (factors2 10);
+      check (list (pair int int)) "20" [(2, 2); (5, 1)] (factors2 20);
+      check (list (pair int int)) "315" [(3, 2); (5, 1); (7, 1)] (factors2 315));
+
+  ("phi_improved", `Quick, fun () ->
+      check int "10" 4 (phi_improved 10);
+      check int "13" 12 (phi_improved 13));
+
+  ("all_primes", `Quick, fun () ->
+      check (list int) "2 10" [2; 3; 5; 7] (all_primes 2 10);
+      check int "2 7920" 1000 (Stdlib.List.length (all_primes 2 7920)));
+
+  ("goldbach", `Quick, fun () ->
+      check (pair int int) "10" (3, 7) (goldbach 10);
+      check (pair int int) "20" (3, 17) (goldbach 20);
+      check (pair int int) "28" (5, 23) (goldbach 28));
+
+  ("goldbach_list", `Quick, fun () ->
+      check (list (pair int (pair int int))) "9 20"
+        [(10, (3, 7)); (12, (5, 7)); (14, (3, 11));
+         (16, (3, 13)); (18, (5, 13)); (20, (3, 17))]
+        (goldbach_list 9 20));
 ]

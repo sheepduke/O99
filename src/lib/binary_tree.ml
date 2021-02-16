@@ -39,3 +39,27 @@ let cbal_tree: int -> char binary_tree list = fun n ->
         (product left_result right_result) @ (product right_result left_result)
   in
   aux n
+
+
+let is_symmetric: 'a binary_tree -> bool = fun tree ->
+  let rec is_mirror left right =
+    match left, right with
+    | Empty, Empty -> true
+    | Node (_, l1, r1), Node (_, l2, r2) -> is_mirror l1 r2 && is_mirror l2 r1
+    | _, _ -> false
+  in
+  match tree with
+  | Empty -> true
+  | Node (_, left, right) -> is_mirror left right
+
+
+let construct: 'a list -> 'a binary_tree = fun list ->
+  let rec add root value =
+    match root with
+    | Empty -> Node (value, Empty, Empty)
+    | Node (v, left, right) as node ->
+      if value = v then node
+      else if value < v then Node (v, add left value, right)
+      else Node (v, left, add right value)
+  in
+  Stdlib.List.fold_left add Empty list

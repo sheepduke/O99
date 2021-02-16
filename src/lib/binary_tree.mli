@@ -32,3 +32,21 @@ val is_symmetric: 'a binary_tree -> bool
  ** Construct a binary search tree from a list of integer numbers.
  **)
 val construct: 'a list -> 'a binary_tree
+
+
+(**
+ ** 58. Generate-and-test paradigm. (medium)
+ **
+ ** Apply the generate-and-test paradigm to construct all symmetric, completely balanced binary trees with a given number of nodes.
+ **)
+val sym_cbal_trees: int -> char binary_tree list
+
+
+(**
+ ** 59. Construct height-balanced binary trees. (medium)
+ **
+ ** In a height-balanced binary tree, the following property holds for every node: The height of its left subtree and the height of its right subtree are almost equal, which means their difference is not greater than one.
+ **
+ ** Write a function hbal_tree to construct height-balanced binary trees for a given height. The function should generate all solutions via backtracking. Put the letter 'x' as information into all nodes of the tree.
+ **)
+val hbal_tree: int -> char binary_tree list

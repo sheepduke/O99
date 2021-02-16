@@ -63,3 +63,44 @@ let construct: 'a list -> 'a binary_tree = fun list ->
       else Node (v, left, add right value)
   in
   Stdlib.List.fold_left add Empty list
+
+
+let sym_cbal_trees: int -> char binary_tree list = fun n ->
+  assert (n >= 0);
+  let rec mirror tree =
+    match tree with
+    | Empty -> Empty
+    | Node (value, left, right) -> Node (value, (mirror right), (mirror left))
+  in
+  match n with
+  | 0 -> []
+  | 1 -> [Node ('x', Empty, Empty)]
+  | _ when n mod 2 = 0 -> []
+  | _ -> Stdlib.List.map
+           (fun tree -> Node ('x', tree, mirror tree))
+           (cbal_tree ((n - 1) / 2))
+
+
+let hbal_tree: int -> char binary_tree list = fun n ->
+  assert (n >= 0);
+  let product left_trees right_trees =
+    Stdlib.List.map (fun left_tree ->
+        Stdlib.List.map (fun right_tree -> Node ('x', left_tree, right_tree))
+          right_trees)
+      left_trees
+    |> Stdlib.List.flatten
+  in
+  (* The result is a pair of (n-1, n-2) results. *)
+  let rec aux i (last1, last2) =
+    if i > n then last1
+    else
+      let current =
+        (product last1 last1)
+        @ (product last1 last2)
+        @ (product last2 last1)
+      in
+      aux (i + 1) (current, last1)
+  in
+  if n = 0 then [Empty]
+  else if n = 1 then [Node ('x', Empty, Empty)]
+  else aux 2 ([Node ('x', Empty, Empty)], [Empty])

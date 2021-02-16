@@ -60,5 +60,55 @@ let tests = [
       check int_binary_tree "[3; 1; 2; 7; 5]"
         (Node (3, Node (1, Empty, Node (2, Empty, Empty)),
                Node (7, Node (5, Empty, Empty), Empty)))
-        (construct [3; 1; 2; 7; 5]))
+        (construct [3; 1; 2; 7; 5]));
+
+  ("sym_cbal_tree", `Quick, fun () ->
+      check (list char_binary_tree) "5"
+        [Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
+               Node ('x', Node ('x', Empty, Empty), Empty));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Empty),
+               Node ('x', Empty, Node ('x', Empty, Empty)))]
+        (List.sort compare_char_binary_tree (sym_cbal_trees 5));
+
+      check int "57" 256 (List.length (sym_cbal_trees 57));
+
+      check (list (pair int int)) "range 10 20"
+        [(10, 0); (11, 4); (12, 0); (13, 4); (14, 0); (15, 1); (16, 0);
+         (17, 8); (18, 0); (19, 16); (20, 0)]
+        (List.map (fun n -> n, List.length(sym_cbal_trees n))
+           (O99.List.range 10 20)));
+
+  ("hbal_tree", `Quick, fun () ->
+      check (list char_binary_tree) "3"
+        [Node ('x', Node ('x', Empty, Empty),
+               Node ('x', Empty, Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Empty, Empty),
+               Node ('x', Node ('x', Empty, Empty), Empty));
+         Node ('x', Node ('x', Empty, Empty),
+               Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
+               Node ('x', Empty, Empty));
+         Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
+               Node ('x', Empty, Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
+               Node ('x', Node ('x', Empty, Empty), Empty));
+         Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
+               Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Empty),
+               Node ('x', Empty, Empty));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Empty),
+               Node ('x', Empty, Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Empty),
+               Node ('x', Node ('x', Empty, Empty), Empty));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Empty),
+               Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)),
+               Node ('x', Empty, Empty));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)),
+               Node ('x', Empty, Node ('x', Empty, Empty)));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)),
+               Node ('x', Node ('x', Empty, Empty), Empty));
+         Node ('x', Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)),
+               Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)))]
+        (List.sort compare_char_binary_tree (hbal_tree 3)));
 ]

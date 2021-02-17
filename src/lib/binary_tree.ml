@@ -1,7 +1,7 @@
 type 'a binary_tree =
   | Empty
   | Node of 'a * 'a binary_tree * 'a binary_tree
-[@@deriving equal,compare]
+[@@deriving show,equal,compare]
 
 let pp: (Format.formatter -> 'a -> unit) ->
   Format.formatter -> 'a binary_tree -> unit = fun pp_value ppf tree ->
@@ -104,3 +104,46 @@ let hbal_tree: int -> char binary_tree list = fun n ->
   if n = 0 then [Empty]
   else if n = 1 then [Node ('x', Empty, Empty)]
   else aux 2 ([Node ('x', Empty, Empty)], [Empty])
+
+
+let count_leaves: 'a binary_tree -> int = fun tree ->
+  let rec aux tree =
+    match tree with
+    | Empty -> 0
+    | Node (_, Empty, Empty) -> 1
+    | Node (_, left, right) -> (aux left) + (aux right)
+  in
+  aux tree
+
+
+let leaves: 'a binary_tree -> 'a list = fun tree ->
+  let rec aux tree =
+    match tree with
+    | Empty -> []
+    | Node (value, Empty, Empty) -> [value]
+    | Node (_, left, right) -> (aux left) @ (aux right)
+  in
+  aux tree
+
+
+let internals: 'a binary_tree -> 'a list = fun tree ->
+  let rec aux tree result =
+    match tree with
+    | Empty -> result
+    | Node (_, left, Empty) -> aux left result
+    | Node (_, Empty, right) -> aux right result
+    | Node (value, left, right) -> aux right (aux left (value :: result))
+  in
+  aux tree []
+
+
+let at_level: 'a binary_tree -> int -> 'a list = fun tree level ->
+  let rec aux tree current_level result =
+    match tree with
+    | Empty -> result
+    | Node (value, left, right) ->
+      if current_level = level
+      then result @ [value]
+      else aux right (current_level + 1) (aux left (current_level + 1) result)
+  in
+  aux tree 1 []

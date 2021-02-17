@@ -1,18 +1,22 @@
 open O99.Binary_tree
 open Alcotest
 
+let show_char ppf value = Format.fprintf ppf "%c" value
+
 let char_binary_tree=
   let pp_char_binary_tree ppf tree =
-    O99.Binary_tree.pp (fun ppf value -> Format.fprintf ppf "%c" value) ppf tree
+    O99.Binary_tree.pp show_char ppf tree
   in
   let equal_char_binary_tree left right =
     equal_binary_tree (fun a b -> Char.equal a b) left right
   in
   testable pp_char_binary_tree equal_char_binary_tree
 
+let show_int ppf value = Format.fprintf ppf "%d" value
+
 let int_binary_tree=
   let pp_int_binary_tree ppf tree =
-    O99.Binary_tree.pp (fun ppf value -> Format.fprintf ppf "%d" value) ppf tree
+    O99.Binary_tree.pp show_int ppf tree
   in
   let equal_int_binary_tree left right =
     equal_binary_tree (fun a b -> Int.equal a b) left right
@@ -111,4 +115,37 @@ let tests = [
          Node ('x', Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)),
                Node ('x', Node ('x', Empty, Empty), Node ('x', Empty, Empty)))]
         (List.sort compare_char_binary_tree (hbal_tree 3)));
+
+  ("count_leaves", `Quick, fun () ->
+      let tree = Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
+                       Node ('x', Node ('x', Empty, Empty), Empty))
+      in
+      check int
+        (O99.Binary_tree.show_binary_tree show_char tree)
+        2 (count_leaves tree));
+
+  ("leaves", `Quick, fun () ->
+      let tree = Node (1, Node (2, Empty, Node (3, Empty, Empty)),
+                       Node (4, Node (5, Empty, Empty), Empty))
+      in
+      check (list int)
+        (O99.Binary_tree.show_binary_tree show_int tree)
+        [3; 5] (leaves tree));
+
+  ("internals", `Quick, fun () ->
+      let tree = Node (1, Node (2, Node (3, Empty, Empty),
+                                Node (4, Empty, Empty)),
+                       Empty)
+      in
+      check (list int)
+        (O99.Binary_tree.show_binary_tree show_int tree)
+        [2] (internals tree));
+
+  ("at_level", `Quick, fun () ->
+      let tree = Node (1, Node (2, Node (3, Empty, Empty), Empty),
+                       Node (4, Empty, Node (5, Empty, Empty)))
+      in
+      check (list int)
+        (O99.Binary_tree.show_binary_tree show_int tree)
+        [2; 4] (at_level tree 2))
 ]

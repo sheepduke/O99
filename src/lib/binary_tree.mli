@@ -1,7 +1,7 @@
 type 'a binary_tree =
   | Empty
   | Node of 'a * 'a binary_tree * 'a binary_tree
-[@@deriving equal,compare]
+[@@deriving show,equal,compare]
 
 val pp: (Format.formatter -> 'a -> unit) ->
   Format.formatter -> 'a binary_tree -> unit
@@ -50,3 +50,34 @@ val sym_cbal_trees: int -> char binary_tree list
  ** Write a function hbal_tree to construct height-balanced binary trees for a given height. The function should generate all solutions via backtracking. Put the letter 'x' as information into all nodes of the tree.
  **)
 val hbal_tree: int -> char binary_tree list
+
+(**
+ ** 61. Count the leaves of a binary tree. (easy)
+ **
+ ** A leaf is a node with no successors. Write a function count_leaves to count them.
+ **)
+val count_leaves: 'a binary_tree -> int
+
+
+(**
+ ** 61A. Collect the leaves of a binary tree in a list. (easy)
+ **
+ ** A leaf is a node with no successors. Write a function leaves to collect them in a list.
+ **)
+val leaves: 'a binary_tree -> 'a list
+
+
+(**
+ ** 62. Collect the internal nodes of a binary tree in a list. (easy)
+ **
+ ** An internal node of a binary tree has either one or two non-empty successors. Write a function internals to collect them in a list.
+ **)
+val internals: 'a binary_tree -> 'a list
+
+
+(**
+ ** 62B. Collect the nodes at a given level in a list. (easy)
+ **
+ ** A node of a binary tree is at level N if the path from the root to the node has length N-1. The root node is at level 1. Write a function at_level t l to collect all nodes of the tree t at level l in a list.
+ **)
+val at_level: 'a binary_tree -> int -> 'a list

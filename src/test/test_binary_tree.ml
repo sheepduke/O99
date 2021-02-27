@@ -164,5 +164,8 @@ let tests = [
       check int_binary_tree "[1; 2; 3; 4; 5; 6]"
         (Node (1, Node (2, Node (4, Empty, Empty), Node (5, Empty, Empty)),
                Node (3, Node (6, Empty, Empty), Empty)))
-        (complete_binary_tree [1; 2; 3; 4; 5; 6]))
+        (complete_binary_tree [1; 2; 3; 4; 5; 6]);
+
+      check bool "[1; 2; 3; 4; 5]" true
+        (is_complete_binary_tree 5 (complete_binary_tree [1; 2; 3; 4; 5])))
 ]

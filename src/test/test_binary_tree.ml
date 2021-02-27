@@ -120,16 +120,14 @@ let tests = [
       let tree = Node ('x', Node ('x', Empty, Node ('x', Empty, Empty)),
                        Node ('x', Node ('x', Empty, Empty), Empty))
       in
-      check int
-        (O99.Binary_tree.show_binary_tree show_char tree)
+      check int (show_binary_tree show_char tree)
         2 (count_leaves tree));
 
   ("leaves", `Quick, fun () ->
       let tree = Node (1, Node (2, Empty, Node (3, Empty, Empty)),
                        Node (4, Node (5, Empty, Empty), Empty))
       in
-      check (list int)
-        (O99.Binary_tree.show_binary_tree show_int tree)
+      check (list int) (show_binary_tree show_int tree)
         [3; 5] (leaves tree));
 
   ("internals", `Quick, fun () ->
@@ -137,15 +135,34 @@ let tests = [
                                 Node (4, Empty, Empty)),
                        Empty)
       in
-      check (list int)
-        (O99.Binary_tree.show_binary_tree show_int tree)
+      check (list int) (show_binary_tree show_int tree)
         [2] (internals tree));
 
   ("at_level", `Quick, fun () ->
       let tree = Node (1, Node (2, Node (3, Empty, Empty), Empty),
                        Node (4, Empty, Node (5, Empty, Empty)))
       in
-      check (list int)
-        (O99.Binary_tree.show_binary_tree show_int tree)
-        [2; 4] (at_level tree 2))
+      check (list int) (show_binary_tree show_int tree)
+        [2; 4] (at_level tree 2));
+
+  ("is_complete_binary_tree", `Quick, fun () ->
+      let tree = Node (1,
+                       Node (2, Node (4, Empty, Empty), Empty),
+                       Node (3, Node (5, Empty, Empty), Empty))
+      in
+      check bool (show_binary_tree show_int tree)
+        true (is_complete_binary_tree 5 tree);
+
+      let tree = Node (1,
+                       Node (2, Node (4, Empty, Empty), Empty),
+                       Node (3, Empty, Node (5, Empty, Empty)))
+      in
+      check bool (show_binary_tree show_int tree)
+        false (is_complete_binary_tree 5 tree));
+
+  ("complete_binary_tree", `Quick, fun () ->
+      check int_binary_tree "[1; 2; 3; 4; 5; 6]"
+        (Node (1, Node (2, Node (4, Empty, Empty), Node (5, Empty, Empty)),
+               Node (3, Node (6, Empty, Empty), Empty)))
+        (complete_binary_tree [1; 2; 3; 4; 5; 6]))
 ]

@@ -16,6 +16,7 @@ let pp: (Format.formatter -> 'a -> unit) ->
   in
   aux ppf tree
 
+
 let cbal_tree: int -> char binary_tree list = fun n ->
   assert (n >= 0);
   let product left_trees right_trees =
@@ -147,3 +148,36 @@ let at_level: 'a binary_tree -> int -> 'a list = fun tree level ->
       else aux right (current_level + 1) (aux left (current_level + 1) result)
   in
   aux tree 1 []
+
+
+let is_complete_binary_tree: int -> 'a binary_tree -> bool = fun count tree ->
+  let rec count_nodes tree =
+    match tree with
+    | Empty -> 0
+    | Node (_, left, right) -> 1 + (count_nodes left) + (count_nodes right)
+  in
+  let rec is_complete_tree tree =
+    match tree with
+    | Empty -> true
+    | Node (_, Empty, Node (_, _, _)) -> false
+    | Node (_, left, right) ->
+      (is_complete_tree left) && (is_complete_tree right)
+  in
+  (count_nodes tree = count) && (is_complete_tree tree)
+
+
+let complete_binary_tree: 'a list -> 'a binary_tree = fun values_list ->
+  (* Convert list to array for better random access perf. *)
+  let values = Array.of_list values_list in
+  let value_count = Array.length values in
+  let rec aux index =
+    if index >= value_count
+    then Empty
+    else begin
+      let value = Array.get values index in
+      let left_index = index * 2 + 1 in
+      let right_index = left_index + 1 in
+      Node (value, aux left_index, aux right_index)
+    end
+  in
+  aux 0

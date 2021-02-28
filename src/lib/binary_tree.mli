@@ -95,3 +95,20 @@ val at_level: 'a binary_tree -> int -> 'a list
 val is_complete_binary_tree: int -> 'a binary_tree -> bool
 
 val complete_binary_tree: 'a list -> 'a binary_tree
+
+
+(**
+ ** 64. Layout a binary tree (1). (medium)
+
+   As a preparation for drawing the tree, a layout algorithm is required to determine the position of each node in a rectangular grid. Several layout methods are conceivable, one of them is shown in the illustration.
+
+   [Binary Tree Grid]
+
+   In this layout strategy, the position of a node v is obtained by the following two rules:
+
+    x(v) is equal to the position of the node v in the inorder sequence;
+    y(v) is equal to the depth of the node v in the tree.
+
+   In order to store the position of the nodes, we will enrich the value at each node with the position (x,y).
+ **)
+val layout_binary_tree_1: 'a binary_tree -> ('a * int * int) binary_tree

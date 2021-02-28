@@ -181,3 +181,18 @@ let complete_binary_tree: 'a list -> 'a binary_tree = fun values_list ->
     end
   in
   aux 0
+
+
+let layout_binary_tree_1: 'a binary_tree -> ('a * int * int) binary_tree =
+  fun tree ->
+  let rec aux tree index height =
+    match tree with
+    | Empty -> (Empty, index)
+    | Node (value, left, right) ->
+      let left_layout, index' = aux left index (height + 1) in
+      let right_layout, next_index = aux right (index' + 1) (height + 1) in
+      (Node ((value, index', height), left_layout, right_layout), next_index)
+  in
+  match (aux tree 1 1) with
+  | (Empty, _) -> Empty
+  | (Node (_, _, _) as node, _) -> node

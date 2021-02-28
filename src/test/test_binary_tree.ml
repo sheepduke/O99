@@ -3,31 +3,37 @@ open Alcotest
 
 let show_char ppf value = Format.fprintf ppf "%c" value
 
-let char_binary_tree=
-  let pp_char_binary_tree ppf tree =
-    O99.Binary_tree.pp show_char ppf tree
-  in
-  let equal_char_binary_tree left right =
+let char_binary_tree =
+  let pp ppf tree = O99.Binary_tree.pp show_char ppf tree in
+  let equal left right =
     equal_binary_tree (fun a b -> Char.equal a b) left right
   in
-  testable pp_char_binary_tree equal_char_binary_tree
+  testable pp equal
 
 let show_int ppf value = Format.fprintf ppf "%d" value
 
-let int_binary_tree=
-  let pp_int_binary_tree ppf tree =
-    O99.Binary_tree.pp show_int ppf tree
-  in
-  let equal_int_binary_tree left right =
+let int_binary_tree =
+  let pp ppf tree = O99.Binary_tree.pp show_int ppf tree in
+  let equal left right =
     equal_binary_tree (fun a b -> Int.equal a b) left right
   in
-  testable pp_int_binary_tree equal_int_binary_tree
+  testable pp equal
 
 let compare_char_binary_tree left right =
   compare_binary_tree (fun a b -> Char.compare a b) left right
 
 let compare_int_binary_tree left right =
   compare_binary_tree (fun a b -> Int.compare a b) left right
+
+let show_char_int_int ppf (char_value, int_value_1, int_value_2) =
+  Format.fprintf ppf "(%c, %d, %d)" char_value int_value_1 int_value_2
+
+let char_int_int_binary_tree =
+  let pp ppf tree = O99.Binary_tree.pp show_char_int_int ppf tree in
+  let equal left right =
+    equal_binary_tree (fun a b -> a = b) left right
+  in
+  testable pp equal
 
 let tests = [
   ("cbal_tree", `Quick, fun () ->
@@ -167,5 +173,32 @@ let tests = [
         (complete_binary_tree [1; 2; 3; 4; 5; 6]);
 
       check bool "[1; 2; 3; 4; 5]" true
-        (is_complete_binary_tree 5 (complete_binary_tree [1; 2; 3; 4; 5])))
+        (is_complete_binary_tree 5 (complete_binary_tree [1; 2; 3; 4; 5])));
+
+  ("layout_binary_tree_1", `Quick, fun () ->
+      let tree =
+        let leaf x = Node (x,Empty,Empty) in
+        Node('n', Node('k', Node('c', leaf 'a',
+                                 Node('h', Node('g', leaf 'e',Empty), Empty)),
+                       leaf 'm'),
+             Node('u', Node('p', Empty, Node('s', leaf 'q', Empty)), Empty))
+      in
+      check char_int_int_binary_tree
+        (show_binary_tree show_char tree)
+        (Node (('n', 8, 1),
+               Node (('k', 6, 2),
+                     Node (('c', 2, 3), Node (('a', 1, 4), Empty, Empty),
+                           Node (('h', 5, 4),
+                                 Node (('g', 4, 5),
+                                       Node (('e', 3, 6), Empty, Empty), Empty),
+                                 Empty)),
+                     Node (('m', 7, 3), Empty, Empty)),
+               Node (('u', 12, 2),
+                     Node (('p', 9, 3), Empty,
+                           Node (('s', 11, 4),
+                                 Node (('q', 10, 5), Empty, Empty),
+                                 Empty)),
+                     Empty))
+        )
+        (layout_binary_tree_1 tree))
 ]
